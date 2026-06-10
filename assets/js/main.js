@@ -1,4 +1,5 @@
-// ========== TOAST ПОВІДОМЛЕННЯ ==========
+// ========== ФУНКЦІЯ ДЛЯ ВІДОБРАЖЕННЯ TOAST ПОВІДОМЛЕННЯ ==========
+// Показує спливаюче повідомлення при натисканні на кнопку "CONSULTATION"
 function showConsultationToast() {
   const toast = document.getElementById('toastNotification');
   if (!toast) return;
@@ -8,7 +9,8 @@ function showConsultationToast() {
   }, 3000);
 }
 
-// ========== ПІДПИСКА НА НОВИНИ ==========
+// ========== ФУНКЦІЯ ДЛЯ ПІДПИСКИ НА НОВИНИ ==========
+// Валідує email та показує повідомлення про успішну підписку
 function subscribeNewsletter() {
   const emailInput = document.getElementById('newsletterEmail');
   const email = emailInput?.value.trim();
@@ -20,14 +22,16 @@ function subscribeNewsletter() {
   emailInput.value = '';
 }
 
-// ========== ГРАФІКИ ==========
-let growthChart = null;
-let pieChart = null;
+// ========== ГЛОБАЛЬНІ ЗМІННІ ДЛЯ ГРАФІКІВ ==========
+let growthChart = null; // Лінійний графік зростання
+let pieChart = null;    // Кругова діаграма
 
+// ========== ІНІЦІАЛІЗАЦІЯ ГРАФІКІВ ==========
 function initCharts() {
   const growthCanvas = document.getElementById('growthChart');
   const pieCanvas = document.getElementById('pieChartCanvas');
   
+  // Створення лінійного графіку (показує зростання доходів)
   if (growthCanvas && !growthChart) {
     growthChart = new Chart(growthCanvas, {
       type: 'line',
@@ -72,6 +76,7 @@ function initCharts() {
     });
   }
   
+  // Створення кругової діаграми (розподіл відсотків)
   if (pieCanvas && !pieChart) {
     pieChart = new Chart(pieCanvas, {
       type: 'pie',
@@ -105,13 +110,15 @@ function initCharts() {
   }
 }
 
-// ========== ОНОВЛЕННЯ PIE CHART ПРИ КЛІКУ ==========
+// ========== ОНОВЛЕННЯ КРУГОВОЇ ДІАГРАМИ ПРИ НАТИСКАННІ ==========
+// Генерує випадкові дані та оновлює діаграму з анімацією
 function setupRefreshPie() {
   const refreshBtn = document.getElementById('refreshPieBtn');
   if (!refreshBtn) return;
   
   refreshBtn.addEventListener('click', () => {
     if (pieChart) {
+      // Генерація випадкових відсотків
       const randomData = [
         Math.floor(15 + Math.random() * 25),
         Math.floor(12 + Math.random() * 22),
@@ -124,13 +131,15 @@ function setupRefreshPie() {
       pieChart.data.datasets[0].data = normalized;
       pieChart.update({ duration: 800, easing: 'easeOutBounce' });
       
+      // Анімація кнопки оновлення
       refreshBtn.style.transform = 'rotate(180deg)';
       setTimeout(() => { refreshBtn.style.transform = ''; }, 400);
     }
   });
 }
 
-// ========== АНІМАЦІЯ HEADER ПРИ СКРОЛІ ==========
+// ========== АНІМАЦІЯ ШАПКИ ПРИ ПРОКРУЧУВАННІ ==========
+// Змінює прозорість фону шапки при скролі
 function initHeaderScroll() {
   const header = document.querySelector('.main-header');
   if (!header) return;
@@ -146,7 +155,8 @@ function initHeaderScroll() {
   });
 }
 
-// ========== АКТИВНЕ МЕНЮ ТА НАВІГАЦІЯ ==========
+// ========== НАВІГАЦІЯ МІЖ СЕКЦІЯМИ ==========
+// Перемикає видимість секцій при кліку на пункти меню
 function initNavigation() {
   const navLinks = document.querySelectorAll('.desktop-nav a');
   const sections = {
@@ -156,6 +166,7 @@ function initNavigation() {
     company: document.getElementById('company-section')
   };
   
+  // Функція для показу вибраної секції
   function showSection(sectionId) {
     Object.values(sections).forEach(section => {
       if (section) section.style.display = 'none';
@@ -166,6 +177,7 @@ function initNavigation() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   
+  // Додаємо обробники подій для пунктів меню
   navLinks.forEach(link => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
@@ -176,11 +188,12 @@ function initNavigation() {
       const sectionId = this.getAttribute('data-section');
       if (sectionId && sections[sectionId]) {
         showSection(sectionId);
-        localStorage.setItem('activeSection', sectionId);
+        localStorage.setItem('activeSection', sectionId); // Зберігаємо активну секцію
       }
     });
   });
   
+  // Відновлюємо останню активну секцію після перезавантаження
   const savedSection = localStorage.getItem('activeSection');
   if (savedSection && sections[savedSection]) {
     showSection(savedSection);
@@ -194,7 +207,8 @@ function initNavigation() {
   }
 }
 
-// ========== МОБІЛЬНЕ МЕНЮ ==========
+// ========== ІНІЦІАЛІЗАЦІЯ МОБІЛЬНОГО МЕНЮ ==========
+// Відкриття/закриття меню на мобільних пристроях
 function initMobileMenu() {
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   const mobileNav = document.getElementById('mobileNav');
@@ -203,53 +217,43 @@ function initMobileMenu() {
   const mobileLinks = document.querySelectorAll('.mobile-nav-link');
   const desktopLinks = document.querySelectorAll('.desktop-nav a');
   
-  // Перевіряємо, чи всі елементи існують
   if (!mobileMenuBtn || !mobileNav || !closeBtn || !overlay) {
     console.warn('Mobile menu elements not found');
     return;
   }
   
-  // Відкрити меню
   function openMobileNav() {
     mobileNav.classList.add('open');
     overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'; // Блокуємо прокрутку фону
   }
   
-  // Закрити меню
   function closeMobileNav() {
     mobileNav.classList.remove('open');
     overlay.classList.remove('active');
     document.body.style.overflow = '';
   }
   
-  // Клік по кнопці меню
   mobileMenuBtn.addEventListener('click', openMobileNav);
-  
-  // Клік по кнопці закриття
   closeBtn.addEventListener('click', closeMobileNav);
-  
-  // Клік по оверлею
   overlay.addEventListener('click', closeMobileNav);
   
-  // Закриття по Escape
+  // Закриття по клавіші Escape
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && mobileNav.classList.contains('open')) {
       closeMobileNav();
     }
   });
   
-  // Клік по посиланню в меню
+  // Обробка кліків по посиланнях в мобільному меню
   mobileLinks.forEach(link => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
       closeMobileNav();
       
-      // Активний стан для мобільного меню
       mobileLinks.forEach(l => l.classList.remove('active'));
       this.classList.add('active');
       
-      // Перемикання секції
       const sectionId = this.getAttribute('data-section');
       if (sectionId) {
         // Ховаємо всі секції
@@ -267,31 +271,33 @@ function initMobileMenu() {
           }
         });
         
-        // Зберігаємо в localStorage
         localStorage.setItem('activeSection', sectionId);
       }
     });
   });
 }
 
-// ========== ЗАПУСК ВСІХ ФУНКЦІЙ ==========
+// ========== ЗАПУСК ВСІХ ФУНКЦІЙ ПІСЛЯ ЗАВАНТАЖЕННЯ СТОРІНКИ ==========
 document.addEventListener('DOMContentLoaded', () => {
-  initCharts();
-  setupRefreshPie();
-  initHeaderScroll();
-  initNavigation();
-  initMobileMenu(); // Додано виклик мобільного меню
+  initCharts();          // Ініціалізуємо графіки
+  setupRefreshPie();     // Налаштовуємо оновлення кругової діаграми
+  initHeaderScroll();    // Додаємо анімацію шапки
+  initNavigation();      // Налаштовуємо навігацію між секціями
+  initMobileMenu();      // Налаштовуємо мобільне меню
   
+  // Кнопка консультації
   const consultBtn = document.getElementById('consultationBtn');
   if (consultBtn) {
     consultBtn.addEventListener('click', showConsultationToast);
   }
   
+  // Кнопка підписки на новини
   const subscribeBtn = document.getElementById('subscribeBtn');
   if (subscribeBtn) {
     subscribeBtn.addEventListener('click', subscribeNewsletter);
   }
   
+  // Підписка по натисканню Enter у полі email
   const newsletterInput = document.getElementById('newsletterEmail');
   if (newsletterInput) {
     newsletterInput.addEventListener('keypress', (e) => {
